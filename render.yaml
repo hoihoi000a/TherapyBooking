@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: therapy-booking
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_SCHEMA
+        value: public
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false

@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.vscode/
+.git/
+
+server.log
+server.err
+*.user
+*.suo
+
+.env
+appsettings.Development.json

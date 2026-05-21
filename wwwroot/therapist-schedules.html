@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>時段管理</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521b">
+  <script src="/nav-active.js?v=20260521b" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">前台預約</a>
+      <a href="/admin/reservations">預約管理</a>
+      <a href="/admin/therapist-schedules">時段管理</a>
+      <a href="/admin/revenue">收益管理</a>
+      <a href="/admin/responses">顧客回應</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="topbar scheduleTopbar">
+      <div>
+        <p class="eyebrow">Schedule Console</p>
+        <h1>時段管理</h1>
+        <p class="adminLead">以月份查看營業日，使用左右箭頭切換月份。點擊日期可設定當天是否營業，營業日會產生 09:00-11:00 與 14:00-16:00 兩個可預約時段。</p>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span>治療師</span>
+          <select id="therapistFilter"></select>
+        </label>
+        <button id="refreshButton" type="button">重新整理</button>
+      </div>
+    </section>
+
+    <section class="monthManager">
+      <div class="calendarPanel">
+        <div class="monthHeader">
+          <button id="prevMonth" class="pageArrow" type="button" aria-label="上一個月">‹</button>
+          <div>
+            <p class="eyebrow">Calendar</p>
+            <h2 id="monthTitle">-</h2>
+          </div>
+          <button id="nextMonth" class="pageArrow" type="button" aria-label="下一個月">›</button>
+        </div>
+
+        <div class="calendarLegend">
+          <span><i class="legendDot open"></i>營業日</span>
+          <span><i class="legendDot closed"></i>未營業</span>
+          <span><i class="legendDot booked"></i>已有預約</span>
+        </div>
+
+        <div class="calendarWeekdays" aria-hidden="true">
+          <span>日</span>
+          <span>一</span>
+          <span>二</span>
+          <span>三</span>
+          <span>四</span>
+          <span>五</span>
+          <span>六</span>
+        </div>
+        <div id="calendarGrid" class="calendarGrid"></div>
+        <div id="calendarMessage" class="formMessage" hidden></div>
+      </div>
+
+      <aside class="dayPanel">
+        <p class="eyebrow">Selected Day</p>
+        <h2 id="selectedDateTitle">請選擇日期</h2>
+        <p id="selectedDateSummary" class="adminLead">點擊月曆中的日期，查看與切換當天營業狀態。</p>
+        <div class="dayActions">
+          <button id="toggleBusinessDay" class="primaryButton" type="button" disabled>設為營業日</button>
+        </div>
+        <div class="slotPreview">
+          <h3>當天時段</h3>
+          <ul id="daySlotList"></ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/therapist-schedules.js?v=20260521c"></script>
+</body>
+</html>

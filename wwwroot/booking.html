@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>預約按摩</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521a">
+  <script src="/nav-active.js?v=20260521" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">首頁</a>
+      <a href="/booking-status">查詢預約</a>
+      <a href="/booking">立即預約</a>
+      <a href="/admin">後台管理</a>
+    </nav>
+  </header>
+
+  <main class="bookingShell">
+    <section class="bookingHero">
+      <div>
+        <p class="eyebrow">Massage Reservation</p>
+        <h1>預約未來一週的療癒時段</h1>
+        <p class="lead">可預約時段為今天起一週內，每天 09:00-11:00 與 14:00-16:00。送出後會先建立待確認預約，後台接受後即可在查詢頁看到狀態。</p>
+      </div>
+      <div class="heroPanel">
+        <span>目前可約</span>
+        <strong id="availableCount">0</strong>
+        <small>個時段</small>
+      </div>
+    </section>
+
+    <section class="bookingGrid">
+      <form id="bookingForm" class="bookingForm">
+        <div class="sectionHead">
+          <h2>填寫預約資料</h2>
+          <p>請選擇服務與時段，留下聯絡方式方便治療師確認。</p>
+        </div>
+
+        <label>
+          <span>服務項目</span>
+          <select id="serviceSelect" name="serviceId" required>
+            <option value="">請選擇服務</option>
+          </select>
+        </label>
+
+        <label>
+          <span>可預約時段</span>
+          <select id="scheduleSelect" name="slotId" required>
+            <option value="">請選擇時段</option>
+          </select>
+        </label>
+
+        <div class="fieldRow">
+          <label>
+            <span>姓名</span>
+            <input id="customerName" name="customerName" autocomplete="name" required>
+          </label>
+          <label>
+            <span>電話</span>
+            <input id="phone" name="phone" autocomplete="tel" required>
+          </label>
+        </div>
+
+        <label>
+          <span>Email</span>
+          <input id="email" name="email" type="email" autocomplete="email">
+        </label>
+
+        <label>
+          <span>備註</span>
+          <textarea id="note" name="note" rows="4" placeholder="例如：想加強肩頸、下背，或需要提醒治療師的狀況。"></textarea>
+        </label>
+
+        <div id="formMessage" class="formMessage" hidden></div>
+        <button class="primaryButton" type="submit">送出預約</button>
+      </form>
+
+      <aside class="summaryPanel">
+        <h2>預約摘要</h2>
+        <dl>
+          <div>
+            <dt>服務</dt>
+            <dd id="summaryService">尚未選擇</dd>
+          </div>
+          <div>
+            <dt>價格</dt>
+            <dd id="summaryPrice">-</dd>
+          </div>
+          <div>
+            <dt>時間</dt>
+            <dd id="summaryTime">尚未選擇</dd>
+          </div>
+          <div>
+            <dt>治療師</dt>
+            <dd id="summaryTherapist">尚未選擇</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/booking.js?v=20260521"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>顧客回應管理</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521a">
+  <script src="/nav-active.js?v=20260521" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">前台預約</a>
+      <a href="/admin/reservations">預約管理</a>
+      <a href="/admin/therapist-schedules">治療師時段</a>
+      <a href="/admin/revenue">收益管理</a>
+      <a href="/admin/responses">顧客回應</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="topbar">
+      <div>
+        <p class="eyebrow">Customer Feedback</p>
+        <h1>顧客回應管理</h1>
+        <p class="adminLead">彙整顧客評分、評論內容與預約服務，用來追蹤服務品質。</p>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span>搜尋</span>
+          <input id="searchInput" type="search" placeholder="客戶、編號、評論">
+        </label>
+        <select id="ratingFilter" aria-label="評分">
+          <option value="all">全部評分</option>
+          <option value="5">5 星</option>
+          <option value="4">4 星</option>
+          <option value="3">3 星</option>
+          <option value="2">2 星</option>
+          <option value="1">1 星</option>
+        </select>
+        <button id="refreshButton" type="button">重新整理</button>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="回應摘要">
+      <article><span>總回應</span><strong id="totalResponses">0</strong></article>
+      <article><span>平均評分</span><strong id="averageRating">0.0</strong></article>
+      <article><span>五星回應</span><strong id="fiveStarResponses">0</strong></article>
+      <article><span>待關注</span><strong id="lowRatingResponses">0</strong></article>
+    </section>
+
+    <section class="board">
+      <div class="boardHead">
+        <div>
+          <h2>顧客回應</h2>
+          <p class="boardSub">顯示有評分或評論內容的預約，每頁最多 10 筆。</p>
+        </div>
+        <p id="resultCount">0 筆</p>
+      </div>
+      <div id="loadingState" class="state">載入中...</div>
+      <div id="errorState" class="state error" hidden></div>
+      <div id="emptyState" class="state" hidden>沒有符合條件的顧客回應</div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>預約</th>
+              <th>客戶</th>
+              <th>服務</th>
+              <th>評分</th>
+              <th>顧客評論</th>
+              <th>顧客備註</th>
+            </tr>
+          </thead>
+          <tbody id="responseRows"></tbody>
+        </table>
+      </div>
+      <nav class="pagination" aria-label="顧客回應分頁">
+        <button id="previousPageButton" class="pageArrow" type="button" aria-label="上一頁">‹</button>
+        <span id="pageInfo">第 1 / 1 頁</span>
+        <button id="nextPageButton" class="pageArrow" type="button" aria-label="下一頁">›</button>
+      </nav>
+    </section>
+  </main>
+
+  <script src="/responses.js"></script>
+</body>
+</html>

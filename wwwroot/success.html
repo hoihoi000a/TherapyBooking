@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>預約已送出</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521a">
+</head>
+<body>
+  <main class="successShell">
+    <section class="successPanel">
+      <p class="eyebrow">Booking Sent</p>
+      <h1>預約已送出</h1>
+      <p>我們已收到你的按摩預約。店家確認後會再與你聯繫。</p>
+      <div id="successInfo" class="successInfo"></div>
+      <a class="primaryLink" href="/booking-status">查詢預約</a>
+      <a class="secondaryLink" href="/booking">再預約一筆</a>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const appointmentNo = params.get("appointmentNo");
+    if (appointmentNo) {
+      document.querySelector("#successInfo").textContent = `預約編號：${appointmentNo}`;
+    }
+  </script>
+</body>
+</html>

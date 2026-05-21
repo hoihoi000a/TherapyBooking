@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>按摩收益管理</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521a">
+  <script src="/nav-active.js?v=20260521" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">前台預約</a>
+      <a href="/admin/reservations">預約管理</a>
+      <a href="/admin/therapist-schedules">治療師時段</a>
+      <a href="/admin/revenue">收益管理</a>
+      <a href="/admin/responses">顧客回應</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="topbar revenueTopbar">
+      <div>
+        <p class="eyebrow">Revenue Console</p>
+        <h1>按摩收益管理</h1>
+        <p class="adminLead">追蹤預約營收、收款狀態、待收款金額與訂單狀態。</p>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span>搜尋</span>
+          <input id="searchInput" type="search" placeholder="客戶、編號、服務">
+        </label>
+        <select id="statusFilter" aria-label="預約狀態">
+          <option value="all">全部狀態</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <button id="refreshButton" type="button">重新整理</button>
+      </div>
+    </section>
+
+    <section class="metrics revenueMetrics" aria-label="收益摘要">
+      <article>
+        <span>預估營收</span>
+        <strong id="grossRevenue">$0</strong>
+        <small>全部未取消訂單</small>
+      </article>
+      <article>
+        <span>已收款</span>
+        <strong id="paidRevenue">$0</strong>
+        <small>付款狀態為 paid</small>
+      </article>
+      <article>
+        <span>待收款</span>
+        <strong id="outstandingRevenue">$0</strong>
+        <small>pending / confirmed 未付款</small>
+      </article>
+      <article>
+        <span>平均客單</span>
+        <strong id="averageTicket">$0</strong>
+        <small>預估營收 / 有效訂單</small>
+      </article>
+    </section>
+
+    <section class="board">
+      <div class="boardHead">
+        <div>
+          <h2>收益明細</h2>
+          <p class="boardSub">依訂單編號由小到大，每頁最多 10 筆。</p>
+        </div>
+        <p id="resultCount">0 筆</p>
+      </div>
+      <div id="loadingState" class="state">載入中...</div>
+      <div id="errorState" class="state error" hidden></div>
+      <div id="emptyState" class="state" hidden>沒有符合條件的收益資料</div>
+      <div class="tableWrap">
+        <table class="revenueTable">
+          <thead>
+            <tr>
+              <th>訂單</th>
+              <th>客戶</th>
+              <th>服務</th>
+              <th>預約狀態</th>
+              <th>付款方式</th>
+              <th>付款狀態</th>
+              <th>應收</th>
+              <th>實收</th>
+              <th>狀態操作</th>
+            </tr>
+          </thead>
+          <tbody id="bookingRows"></tbody>
+        </table>
+      </div>
+      <nav class="pagination" aria-label="收益明細分頁">
+        <button id="previousPageButton" class="pageArrow" type="button" aria-label="上一頁">‹</button>
+        <span id="pageInfo">第 1 / 1 頁</span>
+        <button id="nextPageButton" class="pageArrow" type="button" aria-label="下一頁">›</button>
+      </nav>
+    </section>
+  </main>
+
+  <script src="/revenue.js"></script>
+</body>
+</html>

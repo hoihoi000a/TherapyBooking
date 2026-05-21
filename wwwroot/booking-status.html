@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>查詢預約</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521a">
+  <script src="/nav-active.js?v=20260521" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">首頁</a>
+      <a href="/booking-status">查詢預約</a>
+      <a href="/booking">立即預約</a>
+      <a href="/admin">後台管理</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="topbar revenueTopbar">
+      <div>
+        <p class="eyebrow">Booking Status</p>
+        <h1>查詢預約</h1>
+        <p class="adminLead">顯示自今天起一週內尚未過期的預約，依時間由近到遠排序。狀態為「已接受」代表後台已確認預約。</p>
+      </div>
+      <a class="primaryLink" href="/booking">新增預約</a>
+    </section>
+
+    <section class="board">
+      <div class="boardHead">
+        <div>
+          <h2>未來一週預約情況</h2>
+          <p id="statusSummary">正在載入...</p>
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>預約編號</th>
+              <th>日期時段</th>
+              <th>服務</th>
+              <th>顧客</th>
+              <th>治療師</th>
+              <th>狀態</th>
+            </tr>
+          </thead>
+          <tbody id="bookingStatusRows"></tbody>
+        </table>
+      </div>
+
+      <div id="bookingStatusEmpty" class="state" hidden>目前未來一週沒有預約資料。</div>
+      <div class="pagination">
+        <button id="prevPage" class="pageArrow" type="button" aria-label="上一頁">‹</button>
+        <span id="pageInfo">1 / 1</span>
+        <button id="nextPage" class="pageArrow" type="button" aria-label="下一頁">›</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/booking-status.js?v=20260521"></script>
+</body>
+</html>

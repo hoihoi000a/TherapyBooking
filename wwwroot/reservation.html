@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>預約管理</title>
+  <link rel="stylesheet" href="/styles.css?v=20260521d">
+  <script src="/nav-active.js?v=20260521c" defer></script>
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">前台預約</a>
+      <a href="/admin/reservations">預約管理</a>
+      <a href="/admin/therapist-schedules">時段管理</a>
+      <a href="/admin/revenue">收益管理</a>
+      <a href="/admin/responses">顧客回應</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="topbar">
+      <div>
+        <p class="eyebrow">Reservation Console</p>
+        <h1>預約管理</h1>
+        <p class="adminLead">狀態共有待確認、已確認、已取消、已完成。治療師可在操作欄位更新預約狀態，狀態欄位會顯示資料庫目前的 status。</p>
+      </div>
+      <div class="toolbar reservationToolbar">
+        <label class="search">
+          <span>月份</span>
+          <select id="monthFilter" aria-label="預約月份">
+            <option value="all">全部月份</option>
+          </select>
+        </label>
+        <label class="search">
+          <span>搜尋</span>
+          <input id="searchInput" type="search" placeholder="客戶、編號、服務">
+        </label>
+        <select id="statusFilter" aria-label="預約狀態">
+          <option value="all">全部狀態</option>
+          <option value="pending">待確認</option>
+          <option value="confirmed">已確認</option>
+          <option value="cancelled">已取消</option>
+          <option value="completed">已完成</option>
+        </select>
+        <button id="refreshButton" type="button">重新整理</button>
+      </div>
+    </section>
+
+    <section class="metrics reservationMetrics" aria-label="預約摘要">
+      <article><span>總預約</span><strong id="totalBookings">0</strong></article>
+      <article><span>待確認</span><strong id="pendingBookings">0</strong></article>
+      <article><span>已確認</span><strong id="confirmedBookings">0</strong></article>
+      <article><span>已取消</span><strong id="cancelledBookings">0</strong></article>
+    </section>
+
+    <section class="board">
+      <div class="boardHead">
+        <div>
+          <h2>預約清單</h2>
+          <p id="monthSummary" class="boardSub">依月份與狀態篩選預約。</p>
+        </div>
+        <p id="resultCount">0 筆</p>
+      </div>
+      <div id="loadingState" class="state">載入中...</div>
+      <div id="errorState" class="state error" hidden></div>
+      <div id="emptyState" class="state" hidden>目前沒有符合條件的預約。</div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>預約</th>
+              <th>日期時間</th>
+              <th>客戶</th>
+              <th>治療師</th>
+              <th>服務</th>
+              <th>顧客備註</th>
+              <th>狀態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="bookingRows"></tbody>
+        </table>
+      </div>
+      <nav class="pagination" aria-label="預約分頁">
+        <button id="previousPageButton" class="pageArrow" type="button" aria-label="上一頁">‹</button>
+        <span id="pageInfo">第 1 / 1 頁</span>
+        <button id="nextPageButton" class="pageArrow" type="button" aria-label="下一頁">›</button>
+      </nav>
+    </section>
+  </main>
+
+  <script src="/reservation.js?v=20260521d"></script>
+</body>
+</html>

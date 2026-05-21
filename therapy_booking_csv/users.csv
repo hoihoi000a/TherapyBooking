@@ -1,0 +1,12 @@
+id,role_id,username,password_hash,full_name,gender,birthday,phone,email,address,is_active,created_at,updated_at
+1,1,admin001,hashed_password,System Admin,male,1990-01-01,0912345678,admin@example.com,Taipei,True,2026-05-19 09:00:00,2026-05-19 09:00:00
+2,2,alice,hashed_password,Alice Lin,female,1992-04-12,0911000002,alice@example.com,Taipei,True,2026-05-19 09:05:00,2026-05-19 09:05:00
+3,2,brian,hashed_password,Brian Chen,male,1988-08-23,0911000003,brian@example.com,New Taipei,True,2026-05-19 09:10:00,2026-05-19 09:10:00
+4,2,cathy,hashed_password,Cathy Huang,female,1995-02-18,0911000004,cathy@example.com,Taoyuan,True,2026-05-19 09:15:00,2026-05-19 09:15:00
+5,2,david,hashed_password,David Wu,male,1985-11-05,0911000005,david@example.com,Hsinchu,True,2026-05-19 09:20:00,2026-05-19 09:20:00
+6,2,emily,hashed_password,Emily Tsai,female,1991-06-30,0911000006,emily@example.com,Taichung,True,2026-05-19 09:25:00,2026-05-19 09:25:00
+7,2,frank,hashed_password,Frank Wang,male,1987-09-14,0911000007,frank@example.com,Tainan,True,2026-05-19 09:30:00,2026-05-19 09:30:00
+8,2,grace,hashed_password,Grace Lee,female,1993-12-08,0911000008,grace@example.com,Kaohsiung,True,2026-05-19 09:35:00,2026-05-19 09:35:00
+9,2,henry,hashed_password,Henry Yang,male,1994-03-27,0911000009,henry@example.com,Keelung,True,2026-05-19 09:40:00,2026-05-19 09:40:00
+10,2,irene,hashed_password,Irene Chang,female,1989-07-19,0911000010,irene@example.com,Yilan,True,2026-05-19 09:45:00,2026-05-19 09:45:00
+11,2,IamPeggy,peggy0123,Peggy Lin,female,1989-07-19,0911558844,peggylin8844@gmail.com,Yilan,True,2026-05-20 01:51:56+00,2026-05-20 01:52:08+00

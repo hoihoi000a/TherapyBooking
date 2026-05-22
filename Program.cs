@@ -223,6 +223,12 @@ internal static class Program
                 return Results.BadRequest(new { message = "Selected service is not available." });
             }
 
+            var customer = await FindOrCreateCustomerAsync(supabase, request);
+            if (customer is null || customer.Id <= 0)
+            {
+                return Results.Problem("Unable to create customer profile.");
+            }
+
             var schedules = await GetModelsAsync<Schedule>(supabase);
             var schedule = schedules.FirstOrDefault(item =>
                 item.TherapistId == slot.TherapistId &&
@@ -255,12 +261,11 @@ internal static class Program
                 return Results.BadRequest(new { message = "Unable to reserve selected slot." });
             }
 
-            var todaySequence = appointments.Count(item => item.AppointmentDate.Date == slot.StartTime.Date) + 1;
             var now = DateTime.Now;
             var appointment = new Appointment
             {
-                AppointmentNo = $"APT{slot.StartTime:yyyyMMdd}{todaySequence:000}",
-                UserId = 1,
+                AppointmentNo = GenerateAppointmentNo(slot.StartTime, appointments),
+                UserId = customer.Id,
                 TherapistId = slot.TherapistId,
                 ServiceId = service.Id,
                 ScheduleId = schedule.Id,
@@ -572,6 +577,20 @@ internal static class Program
         return new BookingResponse(summary, bookingRows);
     }
 
+    private static string GenerateAppointmentNo(DateTime appointmentTime, List<Appointment> appointments)
+    {
+        var prefix = $"APT{appointmentTime:yyyyMMdd}";
+        var nextSequence = appointments
+            .Select(item => item.AppointmentNo)
+            .Where(appointmentNo => appointmentNo.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            .Select(appointmentNo => appointmentNo[prefix.Length..])
+            .Select(suffix => int.TryParse(suffix, out var sequence) ? sequence : 0)
+            .DefaultIfEmpty(0)
+            .Max() + 1;
+
+        return $"{prefix}{nextSequence:0000}";
+    }
+
     private static string? ValidateCreateBookingRequest(CreateBookingRequest request)
     {
         if (request.ServiceId <= 0)
@@ -687,6 +706,58 @@ internal static class Program
         }
 
         return null;
+    }
+
+    private static async Task<User?> FindOrCreateCustomerAsync(Client supabase, CreateBookingRequest request)
+    {
+        var customerName = request.CustomerName.Trim();
+        var phone = request.Phone.Trim();
+        var phoneKey = NormalizePhone(phone);
+        var email = request.Email?.Trim() ?? string.Empty;
+        var users = await GetModelsAsync<User>(supabase);
+        var existing = users.FirstOrDefault(user =>
+            string.Equals(user.FullName.Trim(), customerName, StringComparison.OrdinalIgnoreCase) &&
+            NormalizePhone(user.Phone ?? string.Empty) == phoneKey);
+
+        if (existing is not null)
+        {
+            return existing;
+        }
+
+        var roles = await GetModelsAsync<Role>(supabase);
+        var customerRoleId = roles
+            .FirstOrDefault(role => string.Equals(role.RoleName, "user", StringComparison.OrdinalIgnoreCase))
+            ?.Id ?? 2;
+        var now = DateTime.Now;
+        var customer = new User
+        {
+            RoleId = customerRoleId,
+            Username = $"{customerName}_{phone}",
+            PasswordHash = string.Empty,
+            FullName = customerName,
+            Phone = phone,
+            Email = email,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        var result = await supabase.From<User>().Insert(customer);
+        var created = result.Models.FirstOrDefault();
+        if (created is not null)
+        {
+            return created;
+        }
+
+        var refreshedUsers = await GetModelsAsync<User>(supabase);
+        return refreshedUsers.FirstOrDefault(user =>
+            string.Equals(user.FullName.Trim(), customerName, StringComparison.OrdinalIgnoreCase) &&
+            NormalizePhone(user.Phone ?? string.Empty) == phoneKey);
+    }
+
+    private static string NormalizePhone(string value)
+    {
+        return new string(value.Where(char.IsDigit).ToArray());
     }
 
     private static string BuildCustomerMeta(CreateBookingRequest request)

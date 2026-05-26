@@ -740,6 +740,25 @@ button:disabled {
   gap: 10px;
 }
 
+.toolbar > select {
+  width: auto;
+  min-width: 150px;
+}
+
+.toolbar > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.reservationToolbar {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.reservationToolbar .search {
+  width: 180px;
+}
+
 .search {
   width: 240px;
 }
@@ -1055,7 +1074,10 @@ td {
     position: static;
   }
 
-  .search {
+  .search,
+  .reservationToolbar .search,
+  .toolbar > select,
+  .toolbar > button {
     width: 100%;
   }
 

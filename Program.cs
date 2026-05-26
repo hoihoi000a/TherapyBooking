@@ -13,6 +13,7 @@ internal static class Program
     private const string DefaultSchema = "public";
     private static readonly TimeZoneInfo TaipeiTimeZone = ResolveTaipeiTimeZone();
     private static readonly HashSet<string> ValidStatuses = ["pending", "confirmed", "completed", "cancelled"];
+    private static readonly HashSet<string> ValidPaymentStatuses = ["pending", "paid", "cancelled", "refunded"];
 
     private static async Task Main(string[] args)
     {
@@ -475,6 +476,23 @@ internal static class Program
             return Results.Ok(new { message = "Booking status updated.", count = result.Models.Count });
         });
 
+        app.MapPatch("/api/admin/bookings/{id:long}/payment-status", async (Client supabase, long id, UpdatePaymentStatusRequest request) =>
+        {
+            var status = request.Status.Trim().ToLowerInvariant();
+            if (!ValidPaymentStatuses.Contains(status))
+            {
+                return Results.BadRequest(new { message = "Unsupported payment status." });
+            }
+
+            var result = await supabase
+                .From<Payment>()
+                .Where(item => item.AppointmentId == id)
+                .Set(item => item.PaymentStatus, status)
+                .Update();
+
+            return Results.Ok(new { message = "Payment status updated.", count = result.Models.Count });
+        });
+
         app.MapPatch("/api/admin/schedules/{id:long}", async (Client supabase, long id, UpdateScheduleRequest request) =>
         {
             var validationError = ValidateScheduleRequest(request);
@@ -834,6 +852,8 @@ public sealed record CreateBookingRequest(
     string? Note);
 
 public sealed record UpdateBookingStatusRequest(string Status);
+
+public sealed record UpdatePaymentStatusRequest(string Status);
 
 public sealed record DayScheduleRequest(
     long TherapistId,

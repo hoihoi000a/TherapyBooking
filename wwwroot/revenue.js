@@ -120,20 +120,20 @@ function renderRows() {
       <td><span class="pill ${normalize(booking.paymentStatus)}">${escapeHtml(booking.paymentStatus || "-")}</span></td>
       <td class="moneyCell">${money.format(expectedAmount)}</td>
       <td class="moneyCell ${actualAmount > 0 ? "paidAmount" : "unpaidAmount"}">${money.format(actualAmount)}</td>
-      <td><select class="statusSelect" data-id="${booking.id}">${statusOption("pending", booking.status)}${statusOption("confirmed", booking.status)}${statusOption("completed", booking.status)}${statusOption("cancelled", booking.status)}</select></td>
+      <td><select class="statusSelect paymentStatusSelect" data-id="${booking.id}" aria-label="更新付款狀態">${statusOption("paid", booking.paymentStatus)}${statusOption("pending", booking.paymentStatus)}${statusOption("refunded", booking.paymentStatus)}${statusOption("cancelled", booking.paymentStatus)}</select></td>
     `;
     fragment.append(row);
   }
 
   els.rows.append(fragment);
-  document.querySelectorAll(".statusSelect").forEach((select) => select.addEventListener("change", updateStatus));
+  document.querySelectorAll(".paymentStatusSelect").forEach((select) => select.addEventListener("change", updatePaymentStatus));
 }
 
-async function updateStatus(event) {
+async function updatePaymentStatus(event) {
   const select = event.target;
   select.disabled = true;
   try {
-    const response = await fetch(`/api/admin/bookings/${select.dataset.id}/status`, {
+    const response = await fetch(`/api/admin/bookings/${select.dataset.id}/payment-status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: select.value })
@@ -141,7 +141,7 @@ async function updateStatus(event) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     await loadBookings();
   } catch (error) {
-    els.error.textContent = `更新狀態失敗：${error.message}`;
+    els.error.textContent = `付款狀態更新失敗：${error.message}`;
     els.error.hidden = false;
   } finally {
     select.disabled = false;
@@ -210,3 +210,4 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+

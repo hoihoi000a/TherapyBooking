@@ -1052,6 +1052,30 @@ td {
   margin-top: 10px;
 }
 
+
+.loginShell {
+  display: grid;
+  min-height: calc(100vh - 80px);
+  place-items: center;
+  width: min(100% - 32px, 1180px);
+  margin: 0 auto;
+  padding: 24px 0 56px;
+}
+
+.loginPanel {
+  width: min(440px, 100%);
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.loginForm {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
 @media (max-width: 900px) {
   .topbar,
   .toolbar,

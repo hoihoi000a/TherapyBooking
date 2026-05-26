@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>後台登入</title>
+  <link rel="stylesheet" href="/styles.css?v=20260526-admin-login">
+</head>
+<body>
+  <header class="siteNav">
+    <a class="brand" href="/">Therapy Booking</a>
+    <nav>
+      <a href="/">前台預約</a>
+      <a href="/admin" aria-current="page">後台登入</a>
+    </nav>
+  </header>
+
+  <main class="loginShell">
+    <section class="loginPanel" aria-labelledby="loginTitle">
+      <p class="eyebrow">Admin Console</p>
+      <h1 id="loginTitle">後台管理登入</h1>
+      <p class="adminLead">請先登入，才可進入預約、時段、收益與顧客回應管理。</p>
+
+      <form id="adminLoginForm" class="loginForm">
+        <label>
+          <span>帳號</span>
+          <input id="adminUsername" name="username" autocomplete="username" value="admin" required>
+        </label>
+        <label>
+          <span>密碼</span>
+          <input id="adminPassword" name="password" type="password" autocomplete="current-password" value="admin" required>
+        </label>
+        <button class="primaryButton" type="submit">登入</button>
+        <p id="loginMessage" class="formMessage error" hidden></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="/admin-login.js?v=20260526"></script>
+</body>
+</html>

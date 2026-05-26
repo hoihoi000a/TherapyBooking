@@ -53,7 +53,7 @@ internal static class Program
         app.MapGet("/home", () => Results.File(Path.Combine(app.Environment.WebRootPath, "home.html"), "text/html"));
         app.MapGet("/booking", () => Results.File(Path.Combine(app.Environment.WebRootPath, "booking.html"), "text/html"));
         app.MapGet("/booking-status", () => Results.File(Path.Combine(app.Environment.WebRootPath, "booking-status.html"), "text/html"));
-        app.MapGet("/admin", () => Results.File(Path.Combine(app.Environment.WebRootPath, "reservation.html"), "text/html"));
+        app.MapGet("/admin", () => Results.File(Path.Combine(app.Environment.WebRootPath, "admin-login.html"), "text/html"));
         app.MapGet("/admin/revenue", () => Results.File(Path.Combine(app.Environment.WebRootPath, "revenue.html"), "text/html"));
         app.MapGet("/admin/reservations", () => Results.File(Path.Combine(app.Environment.WebRootPath, "reservation.html"), "text/html"));
         app.MapGet("/admin/responses", () => Results.File(Path.Combine(app.Environment.WebRootPath, "responses.html"), "text/html"));

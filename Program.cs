@@ -11,6 +11,7 @@ internal static class Program
     private const string DefaultSupabaseUrl = "https://paohtsanziftkgbquvqq.supabase.co";
     private const string DefaultSupabaseKey = "sb_publishable_0f4DSU_u1dvkagDcRAURbw_E0GRuPxd";
     private const string DefaultSchema = "public";
+    private static readonly TimeZoneInfo TaipeiTimeZone = ResolveTaipeiTimeZone();
     private static readonly HashSet<string> ValidStatuses = ["pending", "confirmed", "completed", "cancelled"];
 
     private static async Task Main(string[] args)
@@ -86,7 +87,7 @@ internal static class Program
             var usersById = users.ToDictionary(user => user.Id);
 
             var result = schedules
-                .Where(schedule => schedule.IsAvailable && schedule.StartTime >= DateTime.Today)
+                .Where(schedule => schedule.IsAvailable && ToTaipeiTime(schedule.StartTime) >= TaipeiToday())
                 .OrderBy(schedule => schedule.StartTime)
                 .Select(schedule =>
                 {
@@ -102,8 +103,8 @@ internal static class Program
                         schedule.TherapistId,
                         therapistUser?.FullName ?? therapist?.TherapistCode ?? $"Therapist #{schedule.TherapistId}",
                         therapist?.TherapistCode,
-                        schedule.StartTime,
-                        schedule.EndTime);
+                        ToTaipeiTime(schedule.StartTime),
+                        ToTaipeiTime(schedule.EndTime));
                 })
                 .ToList();
 
@@ -163,10 +164,10 @@ internal static class Program
                         schedule.TherapistId,
                         therapist?.TherapistCode ?? $"TH{schedule.TherapistId:000}",
                         therapistUser?.FullName ?? therapist?.TherapistCode ?? $"Therapist #{schedule.TherapistId}",
-                        schedule.StartTime,
-                        schedule.EndTime,
+                        ToTaipeiTime(schedule.StartTime),
+                        ToTaipeiTime(schedule.EndTime),
                         schedule.IsAvailable,
-                        schedule.CreatedAt);
+                        ToTaipeiTime(schedule.CreatedAt));
                 })
                 .ToList();
 
@@ -182,9 +183,9 @@ internal static class Program
         app.MapGet("/api/public/bookings/upcoming", async (Client supabase) =>
         {
             var response = await BuildBookingResponseAsync(supabase);
-            var endDate = DateTime.Today.AddDays(7);
+            var endDate = TaipeiToday().AddDays(7);
             var result = response.Bookings
-                .Where(booking => booking.StartTime >= DateTime.Now && booking.StartTime < endDate)
+                .Where(booking => booking.StartTime >= TaipeiNow() && booking.StartTime < endDate)
                 .OrderBy(booking => booking.StartTime)
                 .Select(booking => new PublicBookingRow(
                     booking.AppointmentNo,
@@ -243,7 +244,7 @@ internal static class Program
                     StartTime = slot.StartTime,
                     EndTime = slot.EndTime,
                     IsAvailable = false,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = TaipeiNow()
                 });
                 schedule = scheduleInsert.Models.FirstOrDefault();
             }
@@ -261,7 +262,7 @@ internal static class Program
                 return Results.BadRequest(new { message = "Unable to reserve selected slot." });
             }
 
-            var now = DateTime.Now;
+            var now = TaipeiNow();
             var appointment = new Appointment
             {
                 AppointmentNo = GenerateAppointmentNo(slot.StartTime, appointments),
@@ -269,7 +270,7 @@ internal static class Program
                 TherapistId = slot.TherapistId,
                 ServiceId = service.Id,
                 ScheduleId = schedule.Id,
-                AppointmentDate = slot.StartTime.Date,
+                AppointmentDate = ToTaipeiTime(slot.StartTime).Date,
                 StartTime = slot.StartTime,
                 EndTime = slot.EndTime,
                 Status = "pending",
@@ -292,8 +293,8 @@ internal static class Program
                     created.Status,
                     serviceName = service.ServiceName,
                     therapistId = slot.TherapistId,
-                    created.StartTime,
-                    created.EndTime
+                    StartTime = ToTaipeiTime(created.StartTime),
+                    EndTime = ToTaipeiTime(created.EndTime)
                 }
             });
         });
@@ -318,7 +319,7 @@ internal static class Program
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
                 IsAvailable = request.IsAvailable,
-                CreatedAt = DateTime.Now
+                CreatedAt = TaipeiNow()
             };
 
             var result = await supabase.From<Schedule>().Insert(schedule);
@@ -337,11 +338,11 @@ internal static class Program
             var schedules = await GetModelsAsync<Schedule>(supabase);
             var appointments = await GetModelsAsync<Appointment>(supabase);
             var daySchedules = schedules
-                .Where(item => item.TherapistId == request.TherapistId && item.StartTime.Date == date)
+                .Where(item => item.TherapistId == request.TherapistId && ToTaipeiTime(item.StartTime).Date == date)
                 .ToList();
             var bookedKeys = appointments
                 .Where(item => item.TherapistId == request.TherapistId)
-                .Where(item => item.StartTime.Date == date)
+                .Where(item => ToTaipeiTime(item.StartTime).Date == date)
                 .Where(item => !string.Equals(item.Status, "cancelled", StringComparison.OrdinalIgnoreCase))
                 .Select(item => SlotKey(item.StartTime))
                 .ToHashSet(StringComparer.Ordinal);
@@ -367,7 +368,7 @@ internal static class Program
                         StartTime = slot.StartTime,
                         EndTime = slot.EndTime,
                         IsAvailable = shouldOpen,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = TaipeiNow()
                     });
                     changed++;
                     continue;
@@ -432,7 +433,7 @@ internal static class Program
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
                     IsAvailable = request.IsAvailable,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = TaipeiNow()
                 });
                 var created = insertResult.Models.FirstOrDefault();
 
@@ -441,8 +442,8 @@ internal static class Program
                     message = "Slot created.",
                     id = created?.Id,
                     request.TherapistId,
-                    request.StartTime,
-                    request.EndTime,
+                    startTime = ToTaipeiTime(request.StartTime),
+                    endTime = ToTaipeiTime(request.EndTime),
                     request.IsAvailable
                 });
             }
@@ -468,7 +469,7 @@ internal static class Program
                 .From<Appointment>()
                 .Where(item => item.Id == id)
                 .Set(item => item.Status, status)
-                .Set(item => item.UpdatedAt, DateTime.Now)
+                .Set(item => item.UpdatedAt, TaipeiNow())
                 .Update();
 
             return Results.Ok(new { message = "Booking status updated.", count = result.Models.Count });
@@ -550,20 +551,20 @@ internal static class Program
                     service?.ServiceName ?? $"Service #{appointment.ServiceId}",
                     service?.DurationMinutes,
                     service?.Price,
-                    appointment.AppointmentDate,
-                    appointment.StartTime,
-                    appointment.EndTime,
+                    ToTaipeiTime(appointment.StartTime).Date,
+                    ToTaipeiTime(appointment.StartTime),
+                    ToTaipeiTime(appointment.EndTime),
                     schedule?.IsAvailable,
                     payment?.Amount,
                     payment?.PaymentMethod,
                     payment?.PaymentStatus,
-                    payment?.PaidAt,
+                    payment?.PaidAt is null ? null : ToTaipeiTime(payment.PaidAt.Value),
                     review?.Rating,
                     review?.Comment,
                     appointment.CustomerNote,
                     appointment.AdminNote,
-                    appointment.CreatedAt,
-                    appointment.UpdatedAt);
+                    ToTaipeiTime(appointment.CreatedAt),
+                    ToTaipeiTime(appointment.UpdatedAt));
             })
             .ToList();
 
@@ -577,9 +578,41 @@ internal static class Program
         return new BookingResponse(summary, bookingRows);
     }
 
+    private static TimeZoneInfo ResolveTaipeiTimeZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei");
+        }
+    }
+
+    private static DateTime TaipeiNow()
+    {
+        return DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TaipeiTimeZone), DateTimeKind.Unspecified);
+    }
+
+    private static DateTime TaipeiToday()
+    {
+        return TaipeiNow().Date;
+    }
+
+    private static DateTime ToTaipeiTime(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(value, TaipeiTimeZone), DateTimeKind.Unspecified),
+            DateTimeKind.Local => DateTime.SpecifyKind(TimeZoneInfo.ConvertTime(value, TaipeiTimeZone), DateTimeKind.Unspecified),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Unspecified)
+        };
+    }
+
     private static string GenerateAppointmentNo(DateTime appointmentTime, List<Appointment> appointments)
     {
-        var prefix = $"APT{appointmentTime:yyyyMMdd}";
+        var prefix = $"APT{ToTaipeiTime(appointmentTime):yyyyMMdd}";
         var nextSequence = appointments
             .Select(item => item.AppointmentNo)
             .Where(appointmentNo => appointmentNo.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
@@ -635,7 +668,7 @@ internal static class Program
         }
 
         users.ToDictionary(user => user.Id).TryGetValue(therapist.UserId, out var therapistUser);
-        var now = DateTime.Now;
+        var now = TaipeiNow();
         var bookedSlots = appointments
             .Where(item => !string.Equals(item.Status, "cancelled", StringComparison.OrdinalIgnoreCase))
             .Where(item => item.TherapistId == therapist.Id)
@@ -655,8 +688,8 @@ internal static class Program
                 therapist.Id,
                 therapistUser?.FullName ?? therapist.TherapistCode,
                 therapist.TherapistCode,
-                slot.StartTime,
-                slot.EndTime))
+                ToTaipeiTime(slot.StartTime),
+                ToTaipeiTime(slot.EndTime)))
             .ToList();
     }
 
@@ -664,7 +697,7 @@ internal static class Program
     {
         for (var day = 0; day < 7; day++)
         {
-            var date = DateTime.Today.AddDays(day);
+            var date = TaipeiToday().AddDays(day);
             foreach (var slot in GenerateFixedDaySlotTimes(date))
             {
                 yield return slot;
@@ -685,7 +718,7 @@ internal static class Program
 
     private static string SlotKey(DateTime value)
     {
-        return value.ToString("yyyyMMddHHmm");
+        return ToTaipeiTime(value).ToString("yyyyMMddHHmm");
     }
 
     private static bool SameMinute(DateTime left, DateTime right)
@@ -728,7 +761,7 @@ internal static class Program
         var customerRoleId = roles
             .FirstOrDefault(role => string.Equals(role.RoleName, "user", StringComparison.OrdinalIgnoreCase))
             ?.Id ?? 2;
-        var now = DateTime.Now;
+        var now = TaipeiNow();
         var customer = new User
         {
             RoleId = customerRoleId,
